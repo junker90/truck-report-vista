@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +8,7 @@ import { Upload, X, FileImage, Check } from "lucide-react";
 import { toast } from "sonner";
 
 interface ReportFormProps {
-  type: "vehicle" | "trailer";
+  type: "vehicle" | "trailer" | "forklift" | "damage";
 }
 
 interface PhotoWithDescription {
@@ -60,8 +59,18 @@ const ReportForm = ({ type }: ReportFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    const getTypeLabel = () => {
+      switch (type) {
+        case "vehicle": return "pojazdu";
+        case "trailer": return "naczepy";
+        case "forklift": return "wózka widłowego";
+        case "damage": return "szkody";
+        default: return "elementu";
+      }
+    };
+    
     if (!number.trim()) {
-      toast.error("Wprowadź numer " + (type === "vehicle" ? "pojazdu" : "naczepy"));
+      toast.error("Wprowadź numer " + getTypeLabel());
       return;
     }
 
@@ -103,17 +112,37 @@ const ReportForm = ({ type }: ReportFormProps) => {
     setIsLoading(false);
   };
 
+  const getFormTitle = () => {
+    switch (type) {
+      case "vehicle": return "pojazdu";
+      case "trailer": return "naczepy";
+      case "forklift": return "wózka widłowego";
+      case "damage": return "szkody";
+      default: return "elementu";
+    }
+  };
+
+  const getPlaceholder = () => {
+    switch (type) {
+      case "vehicle": return "Wprowadź numer pojazdu";
+      case "trailer": return "Wprowadź numer naczepy";
+      case "forklift": return "Wprowadź numer wózka widłowego";
+      case "damage": return "Wprowadź opis szkody";
+      default: return "Wprowadź numer";
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Number Input */}
       <div className="space-y-2">
         <Label htmlFor="number">
-          Numer {type === "vehicle" ? "pojazdu" : "naczepy"}
+          {type === "damage" ? "Opis szkody" : `Numer ${getFormTitle()}`}
         </Label>
         <Input
           id="number"
           type="text"
-          placeholder={`Wprowadź numer ${type === "vehicle" ? "pojazdu" : "naczepy"}`}
+          placeholder={getPlaceholder()}
           value={number}
           onChange={(e) => setNumber(e.target.value)}
           disabled={isLoading}

@@ -1,15 +1,14 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { History, Eye, Truck, Package, Calendar, Camera } from "lucide-react";
+import { History, Eye, Truck, Package, Calendar, Camera, Forklift, FileText } from "lucide-react";
 
 interface Report {
   id: number;
-  type: "vehicle" | "trailer";
+  type: "vehicle" | "trailer" | "forklift" | "damage";
   number: string;
   photos: Array<{
     name: string;
@@ -27,7 +26,11 @@ const ReportsHistory = () => {
   useEffect(() => {
     const savedReports = localStorage.getItem('truck_reports');
     if (savedReports) {
-      setReports(JSON.parse(savedReports));
+      const allReports = JSON.parse(savedReports);
+      const currentDriverId = localStorage.getItem('driver_id');
+      // Filtruj raporty tylko dla aktualnego kierowcy
+      const driverReports = allReports.filter((report: any) => report.driverId === currentDriverId);
+      setReports(driverReports);
     }
   }, []);
 
@@ -42,11 +45,33 @@ const ReportsHistory = () => {
   };
 
   const getTypeIcon = (type: string) => {
-    return type === "vehicle" ? <Truck className="w-4 h-4" /> : <Package className="w-4 h-4" />;
+    switch (type) {
+      case "vehicle": return <Truck className="w-4 h-4" />;
+      case "trailer": return <Package className="w-4 h-4" />;
+      case "forklift": return <Forklift className="w-4 h-4" />;
+      case "damage": return <FileText className="w-4 h-4" />;
+      default: return <FileText className="w-4 h-4" />;
+    }
+  };
+
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case "vehicle": return "Pojazd";
+      case "trailer": return "Naczepa";
+      case "forklift": return "Wózek widłowy";
+      case "damage": return "Szkoda";
+      default: return "Inne";
+    }
   };
 
   const getTypeBadgeVariant = (type: string) => {
-    return type === "vehicle" ? "default" : "secondary";
+    switch (type) {
+      case "vehicle": return "default";
+      case "trailer": return "secondary";
+      case "forklift": return "outline";
+      case "damage": return "destructive";
+      default: return "outline";
+    }
   };
 
   return (
@@ -83,7 +108,7 @@ const ReportsHistory = () => {
                         <span className="font-medium">{report.number}</span>
                       </div>
                       <Badge variant={getTypeBadgeVariant(report.type)}>
-                        {report.type === "vehicle" ? "Pojazd" : "Naczepa"}
+                        {getTypeLabel(report.type)}
                       </Badge>
                     </div>
                     

@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, User, Truck, Package } from "lucide-react";
+import { LogOut, User, Truck, Package, Forklift, FileText } from "lucide-react";
 import ReportForm from "./ReportForm";
 import ReportsHistory from "./ReportsHistory";
+import AdminDashboard from "./AdminDashboard";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -29,7 +30,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             </Avatar>
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                Dashboard
+                Dashboard Kierowcy
               </h1>
               <p className="text-muted-foreground">
                 Kierowca: <span className="text-primary font-medium">{driverId}</span>
@@ -57,12 +58,12 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                   Nowy Raport
                 </CardTitle>
                 <CardDescription>
-                  Wybierz typ pojazdu i wypełnij raport
+                  Wybierz typ pojazdu/sprzętu i wypełnij raport
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid w-full grid-cols-2">
+                  <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="vehicle" className="flex items-center gap-2">
                       <Truck className="w-4 h-4" />
                       Pojazd
@@ -71,12 +72,26 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                       <Package className="w-4 h-4" />
                       Naczepa
                     </TabsTrigger>
+                    <TabsTrigger value="forklift" className="flex items-center gap-2">
+                      <Forklift className="w-4 h-4" />
+                      Wózek
+                    </TabsTrigger>
+                    <TabsTrigger value="damage" className="flex items-center gap-2">
+                      <FileText className="w-4 h-4" />
+                      Szkoda
+                    </TabsTrigger>
                   </TabsList>
                   <TabsContent value="vehicle" className="mt-6">
                     <ReportForm type="vehicle" />
                   </TabsContent>
                   <TabsContent value="trailer" className="mt-6">
                     <ReportForm type="trailer" />
+                  </TabsContent>
+                  <TabsContent value="forklift" className="mt-6">
+                    <ReportForm type="forklift" />
+                  </TabsContent>
+                  <TabsContent value="damage" className="mt-6">
+                    <ReportForm type="damage" />
                   </TabsContent>
                 </Tabs>
               </CardContent>

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { User, Truck, Shield } from "lucide-react";
 import Dashboard from "@/components/Dashboard";
+import AdminDashboard from "@/components/AdminDashboard";
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('driver_id') || !!localStorage.getItem('admin_id'));
@@ -63,7 +63,14 @@ const Index = () => {
   };
 
   if (isLoggedIn) {
-    return <Dashboard onLogout={handleLogout} />;
+    // Sprawdź czy to admin czy kierowca
+    const isAdmin = !!localStorage.getItem('admin_id');
+    
+    if (isAdmin) {
+      return <AdminDashboard onLogout={handleLogout} />;
+    } else {
+      return <Dashboard onLogout={handleLogout} />;
+    }
   }
 
   return (
