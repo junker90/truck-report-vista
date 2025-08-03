@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { History, Eye, Truck, Package, Calendar, Camera, Forklift, FileText } from "lucide-react";
+import { History, Eye, Truck, Package, Calendar, Camera, Forklift, FileText, Download } from "lucide-react";
 
 interface Report {
   id: number;
@@ -74,6 +74,15 @@ const ReportsHistory = () => {
     }
   };
 
+  const downloadImage = (imageUrl: string, filename: string) => {
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <Card className="backdrop-blur-sm bg-card/80 border-border/50 animate-fade-in-up h-fit">
       <CardHeader>
@@ -135,7 +144,7 @@ const ReportsHistory = () => {
                           Zobacz szczegóły
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle className="flex items-center gap-2">
                             {getTypeIcon(report.type)}
@@ -147,7 +156,7 @@ const ReportsHistory = () => {
                           <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4 text-sm">
                               <div>
-                                <span className="font-medium">Typ:</span> {selectedReport.type === "vehicle" ? "Pojazd" : "Naczepa"}
+                                <span className="font-medium">Typ:</span> {getTypeLabel(selectedReport.type)}
                               </div>
                               <div>
                                 <span className="font-medium">Data:</span> {formatDate(selectedReport.createdAt)}
@@ -156,18 +165,28 @@ const ReportsHistory = () => {
                             
                             <div>
                               <h4 className="font-medium mb-3">Zdjęcia ({selectedReport.photos.length})</h4>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {selectedReport.photos.map((photo, index) => (
-                                  <div key={index} className="space-y-2">
-                                    <img
-                                      src={photo.preview}
-                                      alt={photo.name}
-                                      className="w-full h-32 object-cover rounded-md border"
-                                    />
-                                    <div className="text-xs text-muted-foreground">
+                                  <div key={index} className="space-y-3">
+                                    <div className="relative">
+                                      <img
+                                        src={photo.preview}
+                                        alt={photo.name}
+                                        className="w-full h-64 object-cover rounded-md border"
+                                      />
+                                      <Button
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={() => downloadImage(photo.preview, photo.name)}
+                                        className="absolute top-2 right-2"
+                                      >
+                                        <Download className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                    <div className="text-sm">
                                       <div className="font-medium">{photo.name}</div>
                                       {photo.description && (
-                                        <div className="mt-1 p-2 bg-muted rounded text-xs">
+                                        <div className="mt-2 p-3 bg-muted rounded-md text-sm">
                                           {photo.description}
                                         </div>
                                       )}
