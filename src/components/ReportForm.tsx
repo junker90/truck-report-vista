@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Check } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useReportForm } from "@/hooks/useReportForm";
 import { getFormTitle, getPlaceholder } from "@/utils/reportFormUtils";
 import PhotoUpload from "./PhotoUpload";
@@ -13,6 +14,7 @@ interface ReportFormProps {
 }
 
 const ReportForm = ({ type }: ReportFormProps) => {
+  const { t } = useLanguage();
   const {
     number,
     setNumber,
@@ -29,7 +31,7 @@ const ReportForm = ({ type }: ReportFormProps) => {
       {/* Number Input */}
       <div className="space-y-2">
         <Label htmlFor="number">
-          {type === "damage" ? "Opis szkody" : `Numer ${getFormTitle(type)}`}
+          {type === "damage" ? t('report.damage.description') : t(`report.${type}.number`)}
         </Label>
         <Input
           id="number"
@@ -72,11 +74,11 @@ const ReportForm = ({ type }: ReportFormProps) => {
         disabled={isLoading || photos.length === 0}
       >
         {isLoading ? (
-          "Wysyłanie..."
+          t('report.sending')
         ) : (
           <>
             <Check className="w-4 h-4 mr-2" />
-            Wyślij raport
+            {t('report.submit')}
           </>
         )}
       </Button>

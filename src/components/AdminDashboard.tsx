@@ -4,17 +4,36 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, Shield, Users, FileText, BarChart3 } from "lucide-react";
+import { LogOut, Shield, Users, FileText, BarChart3, Download } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { exportReportsToCSV } from "@/utils/csvExport";
+import { toast } from "sonner";
 import AdminReportsView from "./AdminReportsView";
 import AdminStatsView from "./AdminStatsView";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 interface AdminDashboardProps {
   onLogout: () => void;
 }
 
 const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState("reports");
   const adminId = localStorage.getItem('admin_id') || 'admin';
+
+  const handleExportCSV = () => {
+    try {
+      const reports = JSON.parse(localStorage.getItem('truck_reports') || '[]');
+      if (reports.length === 0) {
+        toast.error(t('common.nodata'));
+        return;
+      }
+      exportReportsToCSV(reports, language);
+      toast.success(`${reports.length} reports exported to CSV`);
+    } catch (error) {
+      toast.error('Export failed');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
@@ -29,21 +48,32 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
             </Avatar>
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                Panel Administratora
+                {t('admin.title')}
               </h1>
               <p className="text-muted-foreground">
                 Administrator: <span className="text-primary font-medium">{adminId}</span>
               </p>
             </div>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={onLogout}
-            className="border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Wyloguj
-          </Button>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <Button 
+              variant="outline" 
+              onClick={handleExportCSV}
+              className="border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {t('admin.export.csv')}
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={onLogout}
+              className="border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              {t('dashboard.logout')}
+            </Button>
+          </div>
         </div>
 
         {/* Main Content */}
@@ -51,10 +81,10 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="w-5 h-5 text-primary" />
-              Zarządzanie Systemem
+              {t('admin.management')}
             </CardTitle>
             <CardDescription>
-              Przeglądaj raporty i statystyki wszystkich kierowców
+              {t('admin.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -62,15 +92,15 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="reports" className="flex items-center gap-2">
                   <FileText className="w-4 h-4" />
-                  Wszystkie Raporty
+                  {t('admin.reports')}
                 </TabsTrigger>
                 <TabsTrigger value="stats" className="flex items-center gap-2">
                   <BarChart3 className="w-4 h-4" />
-                  Statystyki
+                  {t('admin.stats')}
                 </TabsTrigger>
                 <TabsTrigger value="users" className="flex items-center gap-2">
                   <Users className="w-4 h-4" />
-                  Użytkownicy
+                  {t('admin.users')}
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="reports" className="mt-6">
@@ -83,7 +113,7 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
                 <div className="text-center py-8">
                   <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                   <p className="text-muted-foreground">
-                    Zarządzanie użytkownikami - w przygotowaniu
+                    {t('admin.users.coming')}
                   </p>
                 </div>
               </TabsContent>

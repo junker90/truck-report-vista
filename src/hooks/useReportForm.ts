@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { getTypeLabel } from "@/utils/reportFormUtils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface PhotoWithDescription {
   file: File;
@@ -14,6 +15,7 @@ interface UseReportFormProps {
 }
 
 export const useReportForm = ({ type }: UseReportFormProps) => {
+  const { t } = useLanguage();
   const [number, setNumber] = useState("");
   const [photos, setPhotos] = useState<PhotoWithDescription[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,12 +34,12 @@ export const useReportForm = ({ type }: UseReportFormProps) => {
     e.preventDefault();
     
     if (!number.trim()) {
-      toast.error("Wprowadź numer " + getTypeLabel(type));
+      toast.error(t('report.error.number') + " " + getTypeLabel(type));
       return;
     }
 
     if (photos.length === 0) {
-      toast.error("Dodaj co najmniej jedno zdjęcie");
+      toast.error(t('report.error.photos'));
       return;
     }
 
@@ -64,8 +66,8 @@ export const useReportForm = ({ type }: UseReportFormProps) => {
     reports.unshift(newReport);
     localStorage.setItem('truck_reports', JSON.stringify(reports));
 
-    toast.success("Raport wysłany pomyślnie!", {
-      description: `${photos.length} zdjęć zostało przesłanych`
+    toast.success(t('report.success'), {
+      description: `${photos.length} ${t('common.photos')}`
     });
 
     // Reset form

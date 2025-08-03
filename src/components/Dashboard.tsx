@@ -5,15 +5,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, User, Truck, Package, Forklift, FileText } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import ReportForm from "./ReportForm";
 import ReportsHistory from "./ReportsHistory";
-import AdminDashboard from "./AdminDashboard";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 interface DashboardProps {
   onLogout: () => void;
 }
 
 const Dashboard = ({ onLogout }: DashboardProps) => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState("vehicle");
   const driverId = localStorage.getItem('driver_id') || 'driver1';
 
@@ -30,21 +32,24 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             </Avatar>
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                Dashboard Kierowcy
+                {t('dashboard.title')}
               </h1>
               <p className="text-muted-foreground">
-                Kierowca: <span className="text-primary font-medium">{driverId}</span>
+                {t('common.driver')}: <span className="text-primary font-medium">{driverId}</span>
               </p>
             </div>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={onLogout}
-            className="border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Wyloguj
-          </Button>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <Button 
+              variant="outline" 
+              onClick={onLogout}
+              className="border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              {t('dashboard.logout')}
+            </Button>
+          </div>
         </div>
 
         {/* Main Content */}
@@ -55,10 +60,10 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Truck className="w-5 h-5 text-primary" />
-                  Nowy Raport
+                  {t('dashboard.reports')}
                 </CardTitle>
                 <CardDescription>
-                  Wybierz typ pojazdu/sprzętu i wypełnij raport
+                  {t('dashboard.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -66,19 +71,19 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                   <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="vehicle" className="flex items-center gap-2">
                       <Truck className="w-4 h-4" />
-                      Pojazd
+                      {t('dashboard.vehicle')}
                     </TabsTrigger>
                     <TabsTrigger value="trailer" className="flex items-center gap-2">
                       <Package className="w-4 h-4" />
-                      Naczepa
+                      {t('dashboard.trailer')}
                     </TabsTrigger>
                     <TabsTrigger value="forklift" className="flex items-center gap-2">
                       <Forklift className="w-4 h-4" />
-                      Wózek
+                      {t('dashboard.forklift')}
                     </TabsTrigger>
                     <TabsTrigger value="damage" className="flex items-center gap-2">
                       <FileText className="w-4 h-4" />
-                      Szkoda
+                      {t('dashboard.damage')}
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="vehicle" className="mt-6">

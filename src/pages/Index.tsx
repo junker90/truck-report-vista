@@ -5,10 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { User, Truck, Shield } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import Dashboard from "@/components/Dashboard";
 import AdminDashboard from "@/components/AdminDashboard";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Index = () => {
+  const { t } = useLanguage();
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('driver_id') || !!localStorage.getItem('admin_id'));
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +22,7 @@ const Index = () => {
     e.preventDefault();
     
     if (!userId.trim() || !password.trim()) {
-      toast.error("Wprowadź ID i hasło");
+      toast.error(t('login.error.empty'));
       return;
     }
 
@@ -34,18 +37,18 @@ const Index = () => {
         localStorage.setItem('driver_id', userId);
         localStorage.removeItem('admin_id'); // Clear admin session if exists
         setIsLoggedIn(true);
-        toast.success("Zalogowano jako kierowca!");
+        toast.success(t('login.success.driver'));
       } else {
-        toast.error("Błędne dane logowania kierowcy");
+        toast.error(t('login.error.driver'));
       }
     } else if (loginType === "admin") {
       if (userId === "admin" && password === "admin123") {
         localStorage.setItem('admin_id', userId);
         localStorage.removeItem('driver_id'); // Clear driver session if exists
         setIsLoggedIn(true);
-        toast.success("Zalogowano jako administrator!");
+        toast.success(t('login.success.admin'));
       } else {
-        toast.error("Błędne dane logowania administratora");
+        toast.error(t('login.error.admin'));
       }
     }
 
@@ -59,7 +62,7 @@ const Index = () => {
     setIsLoggedIn(false);
     setUserId("");
     setPassword("");
-    toast.success("Wylogowano pomyślnie");
+    toast.success(t('logout.success'));
   };
 
   if (isLoggedIn) {
@@ -75,6 +78,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background flex items-center justify-center p-4">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <Card className="w-full max-w-md backdrop-blur-sm bg-card/80 border-border/50">
         <CardHeader className="text-center">
           <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4">
@@ -85,10 +91,10 @@ const Index = () => {
             )}
           </div>
           <CardTitle className="text-2xl font-bold">
-            Truck Report App
+            {t('login.title')}
           </CardTitle>
           <CardDescription>
-            {loginType === "admin" ? "Panel administratora" : "Zaloguj się do systemu raportowania"}
+            {loginType === "admin" ? t('login.admin.description') : t('login.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -101,7 +107,7 @@ const Index = () => {
               onClick={() => setLoginType("driver")}
             >
               <User className="w-4 h-4 mr-1" />
-              Kierowca
+              {t('login.driver')}
             </Button>
             <Button
               type="button"
@@ -110,19 +116,19 @@ const Index = () => {
               onClick={() => setLoginType("admin")}
             >
               <Shield className="w-4 h-4 mr-1" />
-              Admin
+              {t('login.admin')}
             </Button>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="userId">
-                {loginType === "admin" ? "ID Administratora" : "ID Kierowcy"}
+                {loginType === "admin" ? t('login.adminId') : t('login.userId')}
               </Label>
               <Input
                 id="userId"
                 type="text"
-                placeholder={loginType === "admin" ? "Wprowadź ID administratora" : "Wprowadź ID kierowcy"}
+                placeholder={loginType === "admin" ? t('login.adminId') : t('login.userId')}
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
                 disabled={isLoading}
@@ -130,11 +136,11 @@ const Index = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Hasło</Label>
+              <Label htmlFor="password">{t('login.password')}</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Wprowadź hasło"
+                placeholder={t('login.password')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
@@ -146,24 +152,24 @@ const Index = () => {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? "Logowanie..." : (
+              {isLoading ? t('login.loading') : (
                 <>
                   {loginType === "admin" ? (
                     <Shield className="w-4 h-4 mr-2" />
                   ) : (
                     <User className="w-4 h-4 mr-2" />
                   )}
-                  Zaloguj się
+                  {t('login.submit')}
                 </>
               )}
             </Button>
           </form>
           <div className="mt-6 p-4 bg-muted rounded-lg">
             <p className="text-sm text-muted-foreground text-center">
-              <strong>Demo kierowca:</strong> ID: driver1, Hasło: password123
+              {t('login.demo.driver')}
             </p>
             <p className="text-sm text-muted-foreground text-center mt-1">
-              <strong>Demo admin:</strong> ID: admin, Hasło: admin123
+              {t('login.demo.admin')}
             </p>
           </div>
         </CardContent>
